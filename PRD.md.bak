@@ -1,0 +1,369 @@
+# Project Requirements Document (PRD)
+
+## Project Overview
+
+### Project Name
+AsteropeDb
+
+### Project Description
+AsteropeDb is a .NET native database optimized for storing large binary files with queryable metadata. It provides both embedded and networked deployment modes with a focus on performance, modularity, and ease of use.
+
+### Project Vision
+To create a high-performance, developer-friendly database solution that excels at managing large binary data alongside structured metadata, enabling applications in medical imaging, scientific research, media management, and enterprise data storage to efficiently store, query, and retrieve complex datasets.
+
+### Target Audience
+- Healthcare applications handling medical imaging data (DICOM files, radiotherapy data)
+- Scientific research applications managing large datasets
+- Media management systems for images, audio, and video
+- Backup and archival systems
+- Asset pipeline systems in game development and content creation
+
+## Business Requirements
+
+### Problem Statement
+Many applications need to store large binary files (medical images, scientific data, media files) alongside queryable metadata, but existing database solutions either don't handle large binary data efficiently or lack the performance characteristics needed for .NET applications. Current solutions often require complex configurations, have steep learning curves, or don't provide optimal integration with .NET ecosystems.
+
+### Business Objectives
+- Provide a high-performance database solution optimized for large binary data storage
+- Enable seamless integration with .NET applications through native implementation
+- Simplify development workflow with an easy-to-learn API
+- Support both embedded and networked deployment scenarios
+
+### Success Metrics
+- Performance benchmarks showing efficient handling of large binary files (GB+ sizes)
+- Developer adoption rate and community feedback
+- API usability metrics and documentation completeness
+- Transaction throughput and reliability under concurrent access
+
+## Functional Requirements
+
+### Core Features
+1. **Key-Value Binary Storage**
+   - Description: Core storage engine for arbitrary binary streams (byte arrays)
+   - User Story: As a developer, I want to store large binary files efficiently so that my application can handle medical images, scientific data, or media files without performance degradation
+   - Acceptance Criteria:
+     - Support for binary data of any size
+     - Efficient storage and retrieval of byte arrays
+     - Streaming read and write operations
+
+2. **Pluggable Serialization Layer**
+   - Description: Modular serialization system with MessagePack as default, extensible to other formats
+   - User Story: As a developer, I want to serialize structured data with different formats so that I can choose the most appropriate serialization for my use case
+   - Acceptance Criteria:
+     - Default MessagePack serialization implementation
+     - Plugin architecture for additional serializers (Protobuf, etc.)
+     - Indexing support for serialized data
+
+3. **Indexing and Querying**
+   - Description: Query capabilities for serialized metadata associated with binary data
+   - User Story: As a developer, I want to query metadata about stored binary files so that I can efficiently find and retrieve relevant data
+   - Acceptance Criteria:
+     - Index creation on MessagePack-encoded data fields
+     - LINQ expression support for metadata queries in embedded mode (single-table queries only)
+     - Network mode query API (to be determined)
+     - Efficient query execution and result retrieval
+     - No cross-key joins or complex relational operations
+
+4. **Transaction Support**
+   - Description: Full ACID transaction support with configurable isolation levels
+   - User Story: As a developer, I want transactional guarantees so that my application data remains consistent under concurrent access
+   - Acceptance Criteria:
+     - Read Committed isolation level support
+     - Repeatable Read isolation level support
+     - WAL (Write-Ahead Logging) implementation
+     - Rollback and recovery capabilities
+
+5. **Dual Operation Modes**
+   - Description: Support for both embedded and networked deployment
+   - User Story: As a developer, I want to choose between embedded and networked modes so that I can optimize for my specific deployment scenario
+   - Acceptance Criteria:
+     - Embedded mode for single-application use
+     - Networked mode with ASP.NET Core-based server
+     - Consistent API across both modes
+
+### API Requirements
+- Network API for networked mode with appropriate communication protocols
+- Native .NET API for embedded mode
+- Streaming API endpoints for large binary data transfer
+- Authentication and authorization support for networked mode
+- Async operations for all I/O operations to ensure optimal .NET integration and performance
+
+### Network Protocol
+- **Custom HTTP/2 Protocol**: Optimized for large binary file streaming without message size limitations
+  - Binary-efficient frame types for metadata queries, binary requests, and streaming operations
+  - True streaming support for files up to 2^63 bytes without chunking complexity
+  - Leverages HTTP/2 benefits (multiplexing, flow control, header compression) while avoiding message-based overhead
+  - Direct file-to-socket streaming via memory-mapped files for zero-copy performance
+
+## Technical Requirements
+
+### Technology Stack
+- **Runtime**: .NET 9
+- **Programming Language**: C#
+- **Serialization**: MessagePack (default), extensible to Protobuf and others
+- **Networking**: ASP.NET Core for networked mode
+- **Package Distribution**: NuGet packages for modular components
+
+### Architecture Overview
+AsteropeDb follows a highly modular architecture where each major component is distributed as a separate NuGet package. The core namespace is AsteropeDb, with sub-namespaces for different modules (e.g., AsteropeDb.Core, AsteropeDb.Serialization, AsteropeDb.Network). At the lowest level, the system operates as a key-value store for binary streams, with higher-level components providing serialization, indexing, and query capabilities.
+
+The architecture is designed with future clustering and horizontal scaling in mind, using abstractions that can support both single-node and distributed deployments while maintaining API consistency.
+
+### Storage Engine Architecture
+The storage engine uses a hybrid approach optimized for different data types:
+- **Memory-Mapped Files**: Used for storing large binary data, providing OS-level optimization, efficient streaming I/O, and automatic memory management without loading entire files into heap memory
+- **B+ Tree Indexing**: Used for key-value lookups and metadata indexing, providing predictable O(log n) performance, efficient range queries, and natural support for ordered access and transactions
+
+### Data Model
+- **1:1 Key-to-File Mapping**: Each key stores exactly one binary file with its associated metadata
+- **Atomic Operations**: All operations (store, retrieve, delete) work at the key level, ensuring consistency between binary data and metadata
+- **Simplified Transaction Boundaries**: Transactions operate on complete key-value pairs, eliminating complex multi-file coordination
+
+### Performance Requirements
+- **Memory Efficiency**: Minimize heap allocations where possible
+- **Streaming I/O**: Support streaming reads and writes for large binary files
+- **Concurrent Access**: Handle multiple simultaneous transactions efficiently
+- **Large File Support**: Efficient handling of binary files up to 2^63 bytes (theoretical limit)
+- **Query Performance**: Fast metadata queries with proper indexing
+- **Caching Strategy**: LRU (Least Recently Used) cache implementation for frequently accessed metadata to improve query performance
+- **Compression Support**: Optional compression for large binary files to reduce storage requirements and improve I/O performance
+- **Horizontal Scaling**: Architecture designed for future multi-node deployments with linear performance scaling
+
+### Security Requirements
+- Authentication mechanisms for networked mode
+- Data encryption support for sensitive binary data (MAYBE)
+- Access control for different user roles
+- Secure transaction isolation and data integrity
+
+### Integration Requirements
+- Native .NET integration without external dependencies where possible
+- MessagePack library integration for serialization
+- ASP.NET Core integration for network services
+- Extensibility points for custom serialization formats
+
+### Scalability Requirements
+- Modular architecture designed to support future horizontal scaling
+- Abstraction layers that can accommodate distributed storage backends
+- Network protocol designed for multi-node communication patterns
+- Data structures and algorithms chosen for partition-friendly operations
+
+## Non-Functional Requirements
+
+### Usability
+- Simple, easy to learn and use API
+- Comprehensive documentation with practical examples
+- Consistent .NET coding conventions and patterns
+- Clear error messages and debugging information
+
+### Reliability
+- WAL (Write-Ahead Logging) for data durability
+- Crash recovery mechanisms
+- Data integrity validation
+- Graceful handling of system failures
+
+### Maintainability
+- Modular architecture with clear separation of concerns
+- High code quality standards and consistent style
+- Comprehensive unit and integration testing
+- Clear documentation for contributors
+
+### Compatibility
+- .NET 9 runtime requirement
+- Cross-platform support (Windows, Linux, macOS)
+- NuGet package compatibility standards
+
+## Project Constraints
+
+### Timeline
+- **Project Start Date**: TBD
+- **MVP Delivery Date**: TBD
+- **Final Delivery Date**: TBD
+
+### Budget
+- Open source project - development time and resources
+
+### Resources
+- **Team Size**: TBD
+- **Skills Required**: Advanced C#/.NET development, database internals knowledge, performance optimization
+
+### Technical Constraints
+- Must be .NET 9 compatible
+- Memory efficiency requirements may limit certain implementation approaches
+- Need to balance simplicity with advanced features
+
+## Scope and Limitations
+
+### In Scope
+- Core key-value storage engine for binary data
+- MessagePack serialization and indexing
+- Transaction support with Read Committed and Repeatable Read isolation
+- WAL implementation
+- Both embedded and networked operation modes
+- Modular NuGet package architecture
+- Simple, developer-friendly API
+
+### Out of Scope (Initial Version)
+- Complex SQL-like query language
+- GUI administration tools
+- Advanced serialization formats beyond MessagePack
+
+### Future Roadmap
+- Horizontal clustering and replication support
+- Advanced query capabilities
+- Administration and monitoring tools
+- Additional serialization format plugins
+
+### Assumptions
+- Primary use cases involve large binary files with structured metadata
+- .NET 9 adoption is acceptable for target users
+- MessagePack serialization meets most initial use case requirements
+- Developers prefer simple APIs over complex feature sets initially
+
+### Dependencies
+- .NET 9 runtime
+- MessagePack library
+- ASP.NET Core (for networked mode)
+- NuGet package manager for distribution
+
+## Risk Assessment
+
+| Risk | Impact | Probability | Mitigation Strategy |
+|------|--------|-------------|-------------------|
+| Performance not meeting expectations for large files | High | Medium | Early prototyping and benchmarking, iterative optimization |
+| Complexity of transaction implementation | Medium | Medium | Start with simpler isolation levels, gradual enhancement |
+| .NET 9 adoption barriers | Medium | Low | Provide clear migration path, highlight benefits |
+| Competition from established databases | Low | High | Focus on unique value proposition of .NET-native optimization |
+
+## Development Phases
+
+### Phase 1: Project Foundation
+- **Duration**: Initial setup phase
+- **Deliverables**: 
+  - GitHub project setup
+  - README.md documentation
+  - CLAUDE.md documentation
+  - License file
+- **Features**: Project structure and documentation foundation
+
+### Phase 2: Solution Architecture
+- **Duration**: Early development phase
+- **Deliverables**: 
+  - .NET solution (.sln) file
+  - Individual project files (.csproj) for each module/NuGet package
+- **Features**: Modular project structure with proper namespace organization
+
+### Phase 3: Core Type System
+- **Duration**: Foundation development phase
+- **Deliverables**: 
+  - AsteropeDb.Core module implementation
+  - Basic type system and core abstractions
+- **Features**: Fundamental data types and interfaces for the database system
+
+### Phase 4: Low-level Data Store Implementation
+- **Duration**: Core storage development phase
+- **Deliverables**: 
+  - Key-value storage engine implementation
+  - Binary data storage and retrieval mechanisms
+- **Features**: Low-level data store for arbitrary binary streams
+
+### Phase 5: Clustering and Horizontal Scaling (Future)
+- **Duration**: Post-MVP enhancement phase
+- **Deliverables**: 
+  - Distributed storage coordination
+  - Multi-node transaction support
+  - Cluster management and replication
+- **Features**: Horizontal scaling across multiple nodes with data partitioning and replication
+
+## Testing Strategy
+
+### Testing Types
+- **Unit Testing**: High coverage of individual components and modules
+- **Integration Testing**: Testing interactions between modules and serialization layers
+- **Performance Testing**: Benchmarking with large binary files and concurrent access
+- **Transaction Testing**: ACID compliance and isolation level validation
+- **API Testing**: Both embedded and networked mode API validation
+
+### Test Environment
+- Automated testing pipeline with different .NET configurations
+- Performance testing with various file sizes and concurrent user scenarios
+- Cross-platform testing on Windows, Linux, and macOS
+
+## Deployment Strategy
+
+### Deployment Environment
+- **Development**: Local development environment with .NET 9 SDK
+- **Testing**: Automated CI/CD pipeline for continuous testing
+- **Production**: NuGet package distribution for end users
+
+### Deployment Process
+1. Code development and local testing
+2. Automated build and test pipeline
+3. NuGet package creation and versioning
+4. Package publishing to NuGet.org
+5. Documentation updates
+
+### Rollback Plan
+- Version control through Git for source code rollback
+- NuGet package versioning for dependency management
+- Clear versioning strategy for breaking changes
+
+## Maintenance and Support
+
+### Post-Launch Support
+- Community-driven support through GitHub issues
+- Regular updates and bug fixes
+- Performance optimization based on user feedback
+- Feature enhancements based on community needs
+
+### Documentation
+- Comprehensive API documentation with examples
+- Developer guides for common use cases (medical imaging, scientific data, media storage)
+- Architecture documentation for contributors
+- Performance tuning guides
+
+## Use Cases
+
+### Primary Use Cases
+1. **Radiology and Radiotherapy Data Storage**
+   - Store DICOM files with queryable patient and study metadata
+   - Manage dose fields and structure volumes with associated parameters
+   - Enable fast retrieval based on patient ID, study date, modality, etc.
+
+2. **Scientific Data Storage**
+   - Store large experimental datasets with descriptive metadata
+   - Enable queries based on experimental parameters, dates, researchers
+   - Support for various scientific data formats through binary storage
+
+3. **Media Archives**
+   - Store images, audio, and video files with searchable tags and metadata
+   - Support content management systems and digital asset management
+   - Enable queries by creation date, author, tags, file type, etc.
+
+4. **Backup Systems**
+   - Efficient storage of backup data with indexable backup metadata
+   - Support for incremental and differential backup scenarios
+   - Quick recovery based on backup date, source, and content type
+
+5. **Asset Pipelines**
+   - Game development and content creation asset management
+   - Store textures, models, audio assets with build pipeline metadata
+   - Enable queries based on asset type, creation pipeline, dependencies
+
+## Approval and Sign-off
+
+### Stakeholders
+- **Project Owner**: [To be determined]
+- **Technical Lead**: [To be determined]
+- **Community Contributors**: Open source contributors and maintainers
+
+### Review Process
+1. Internal technical review of requirements and architecture
+2. Community feedback and input collection
+3. Final approval and project initiation
+
+---
+
+**Document Version**: 1.0  
+**Last Updated**: 25. 06. 2025
+**Created By**: [Project Team]  
+**Status**: Draft
