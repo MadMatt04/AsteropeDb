@@ -77,3 +77,4 @@ The project follows a 52-week development plan:
 - End all comment sentences with a period .
 - Put the MIT license header at the top of every file
 - Make sure to import any types you reference in comments, e.g. `using System;` for `DateTime`
+- Remove unnecessary using directives

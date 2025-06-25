@@ -1,0 +1,41 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable implicit usings globally -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    
+    <!-- Enable nullable reference types -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Use file-scoped namespaces -->
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Enable treat warnings as errors for code style -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    
+    <!-- Enable analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    
+    <!-- Code analysis rule set -->
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)code-analysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  
+  <!-- Common package references for all projects -->
+  <ItemGroup>
+    <!-- Style analyzers -->
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+  </ItemGroup>
+  
+  <!-- Configure StyleCop -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment for publicly visible type or member -->
+  </PropertyGroup>
+  
+  <!-- StyleCop configuration -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+</Project>

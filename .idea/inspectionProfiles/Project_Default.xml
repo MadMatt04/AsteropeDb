@@ -1,0 +1,34 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="ArrangeAccessorOwnerBody" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeAttributes" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeCodeBodyStyle" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeConstructorOrDestructorBody" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeLocalFunctionBody" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeMethodOrOperatorBody" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeModifiersOrder" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ArrangeNamespaceBody" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ArrangeNullCheckingPattern" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeObjectCreationWhenTypeEvident" enabled="true" level="SUGGESTION" enabled_by_default="true" />
+    <inspection_tool class="ArrangeRedundantParentheses" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeStaticMemberQualifier" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeThisQualifier" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeTrailingCommaInMultilineLists" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeTrailingCommaInSinglelineLists" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="ArrangeTypeMemberModifiers" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ArrangeTypeModifiers" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ArrangeVariableArithmeticOverflow" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="CompareNonConstrainedGenericWithNull" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="RedundantUsingDirective" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SuggestVarOrType_Elsewhere" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SuggestVarOrType_SimpleTypes" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SuggestVarOrType_BuiltInTypes" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="UnusedMember.Global" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="UnusedMember.Local" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="UnusedParameter.Global" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="UnusedParameter.Local" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="UnusedType.Global" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+    <inspection_tool class="UnusedVariable" enabled="false" level="SUGGESTION" enabled_by_default="false" />
+  </profile>
+</component>
