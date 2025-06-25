@@ -35,27 +35,29 @@ public sealed class DbFloatType : IDbType<double>
     /// Gets the singleton instance of the DbFloatType.
     /// </summary>
     public static DbFloatType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbFloatType"/> class.
     /// </summary>
-    private DbFloatType() { }
-    
+    private DbFloatType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "float";
-    
+
     /// <inheritdoc />
     public int Compare(double left, double right)
     {
         return left.CompareTo(right);
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(double value)
     {
         return !double.IsNaN(value);
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(double value)
     {
@@ -63,10 +65,10 @@ public sealed class DbFloatType : IDbType<double>
         {
             throw new ArgumentException("NaN values cannot be used as index keys.", nameof(value));
         }
-        
+
         byte[] buffer = new byte[8];
         long bits = BitConverter.DoubleToInt64Bits(value);
-        
+
         if (bits >= 0)
         {
             BinaryPrimitives.WriteInt64BigEndian(buffer, bits);
@@ -75,10 +77,10 @@ public sealed class DbFloatType : IDbType<double>
         {
             BinaryPrimitives.WriteInt64BigEndian(buffer, ~bits);
         }
-        
+
         return buffer;
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(double value)
     {

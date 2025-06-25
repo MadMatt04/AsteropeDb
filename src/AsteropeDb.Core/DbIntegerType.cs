@@ -35,37 +35,40 @@ public sealed class DbIntegerType : IDbType<long>
     /// Gets the singleton instance of the DbIntegerType.
     /// </summary>
     public static DbIntegerType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbIntegerType"/> class.
     /// </summary>
-    private DbIntegerType() { }
-    
+    private DbIntegerType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "integer";
-    
+
     /// <inheritdoc />
     public int Compare(long left, long right)
     {
         return left.CompareTo(right);
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(long value)
     {
         return true;
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(long value)
     {
         byte[] buffer = new byte[8];
+
         // Flip the sign bit to make signed integers sort correctly as unsigned bytes
         long transformed = value ^ long.MinValue;
         BinaryPrimitives.WriteInt64BigEndian(buffer, transformed);
         return buffer;
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(long value)
     {

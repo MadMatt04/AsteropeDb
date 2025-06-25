@@ -27,5 +27,5 @@ namespace AsteropeDb.Storage;
 /// </summary>
 public class Class1
 {
-    
+
 }

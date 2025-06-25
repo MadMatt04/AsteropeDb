@@ -34,19 +34,19 @@ public readonly struct DbNil : IEquatable<DbNil>
     /// Gets the singleton null value.
     /// </summary>
     public static DbNil Value { get; } = new();
-    
+
     /// <inheritdoc />
     public bool Equals(DbNil other) => true;
-    
+
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is DbNil;
-    
+
     /// <inheritdoc />
     public override int GetHashCode() => 0;
-    
+
     /// <inheritdoc />
     public override string ToString() => "nil";
-    
+
     /// <summary>
     /// Determines whether two <see cref="DbNil"/> values are equal.
     /// </summary>
@@ -54,7 +54,7 @@ public readonly struct DbNil : IEquatable<DbNil>
     /// <param name="right">The second value to compare.</param>
     /// <returns>Always <see langword="true"/> since all nil values are equal.</returns>
     public static bool operator ==(DbNil left, DbNil right) => true;
-    
+
     /// <summary>
     /// Determines whether two <see cref="DbNil"/> values are not equal.
     /// </summary>
@@ -74,33 +74,35 @@ public sealed class DbNilType : IDbType<DbNil>
     /// Gets the singleton instance of the DbNilType.
     /// </summary>
     public static DbNilType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbNilType"/> class.
     /// </summary>
-    private DbNilType() { }
-    
+    private DbNilType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "nil";
-    
+
     /// <inheritdoc />
     public int Compare(DbNil left, DbNil right)
     {
         return 0;
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(DbNil value)
     {
         return true;
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(DbNil value)
     {
         return ReadOnlySpan<byte>.Empty;
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(DbNil value)
     {

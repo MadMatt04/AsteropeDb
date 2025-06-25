@@ -34,18 +34,18 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     private const long TicksPerSecond = 10_000_000L;
     private const long NanosecondsPerTick = 100L;
     private const long MaxNanoseconds = NanosecondsPerTick - 1L;
-    
+
     /// <summary>
     /// Gets the number of ticks since Unix epoch (1970-01-01 00:00:00 UTC).
     /// </summary>
     public long Ticks { get; }
-    
+
     /// <summary>
     /// Gets the nanosecond component (0-99).
     /// This provides sub-tick precision beyond .NET's standard DateTime resolution.
     /// </summary>
     public long Nanoseconds { get; }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DbTimestamp"/> structure.
     /// </summary>
@@ -58,11 +58,11 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
         {
             throw new ArgumentOutOfRangeException(nameof(nanoseconds), nanoseconds, $"Nanoseconds must be between 0 and {MaxNanoseconds}.");
         }
-        
+
         Ticks = ticks;
         Nanoseconds = nanoseconds;
     }
-    
+
     /// <summary>
     /// Creates a <see cref="DbTimestamp"/> from a <see cref="DateTime"/> value.
     /// The DateTime is converted to UTC if it has timezone information.
@@ -72,10 +72,10 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     public static DbTimestamp FromDateTime(DateTime dateTime)
     {
         DateTime utc = dateTime.Kind == DateTimeKind.Local ? dateTime.ToUniversalTime() : dateTime;
-        long ticks = (utc.Ticks - DateTime.UnixEpoch.Ticks);
+        long ticks = utc.Ticks - DateTime.UnixEpoch.Ticks;
         return new DbTimestamp(ticks);
     }
-    
+
     /// <summary>
     /// Creates a <see cref="DbTimestamp"/> from a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -83,10 +83,10 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <returns>A new DbTimestamp representing the same instant.</returns>
     public static DbTimestamp FromDateTimeOffset(DateTimeOffset dateTimeOffset)
     {
-        long ticks = (dateTimeOffset.UtcTicks - DateTime.UnixEpoch.Ticks);
+        long ticks = dateTimeOffset.UtcTicks - DateTime.UnixEpoch.Ticks;
         return new DbTimestamp(ticks);
     }
-    
+
     /// <summary>
     /// Converts this timestamp to a <see cref="DateTime"/> in UTC.
     /// </summary>
@@ -95,7 +95,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     {
         return new DateTime(DateTime.UnixEpoch.Ticks + Ticks, DateTimeKind.Utc);
     }
-    
+
     /// <summary>
     /// Converts this timestamp to a <see cref="DateTimeOffset"/> in UTC.
     /// </summary>
@@ -104,39 +104,39 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     {
         return new DateTimeOffset(DateTime.UnixEpoch.Ticks + Ticks, TimeSpan.Zero);
     }
-    
+
     /// <inheritdoc />
     public int CompareTo(DbTimestamp other)
     {
         int ticksComparison = Ticks.CompareTo(other.Ticks);
         return ticksComparison != 0 ? ticksComparison : Nanoseconds.CompareTo(other.Nanoseconds);
     }
-    
+
     /// <inheritdoc />
     public bool Equals(DbTimestamp other)
     {
         return Ticks == other.Ticks && Nanoseconds == other.Nanoseconds;
     }
-    
+
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
         return obj is DbTimestamp other && Equals(other);
     }
-    
+
     /// <inheritdoc />
     public override int GetHashCode()
     {
         return HashCode.Combine(Ticks, Nanoseconds);
     }
-    
+
     /// <inheritdoc />
     public override string ToString()
     {
         DateTime dt = ToDateTime();
         return Nanoseconds == 0 ? dt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ") : $"{dt:yyyy-MM-ddTHH:mm:ss.fffffff}{Nanoseconds:D2}Z";
     }
-    
+
     /// <summary>
     /// Determines whether two <see cref="DbTimestamp"/> values are equal.
     /// </summary>
@@ -144,7 +144,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <param name="right">The second timestamp to compare.</param>
     /// <returns><see langword="true"/> if the timestamps are equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator ==(DbTimestamp left, DbTimestamp right) => left.Equals(right);
-    
+
     /// <summary>
     /// Determines whether two <see cref="DbTimestamp"/> values are not equal.
     /// </summary>
@@ -152,7 +152,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <param name="right">The second timestamp to compare.</param>
     /// <returns><see langword="true"/> if the timestamps are not equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(DbTimestamp left, DbTimestamp right) => !left.Equals(right);
-    
+
     /// <summary>
     /// Determines whether one <see cref="DbTimestamp"/> is less than another.
     /// </summary>
@@ -160,7 +160,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <param name="right">The second timestamp to compare.</param>
     /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
     public static bool operator <(DbTimestamp left, DbTimestamp right) => left.CompareTo(right) < 0;
-    
+
     /// <summary>
     /// Determines whether one <see cref="DbTimestamp"/> is greater than another.
     /// </summary>
@@ -168,7 +168,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <param name="right">The second timestamp to compare.</param>
     /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
     public static bool operator >(DbTimestamp left, DbTimestamp right) => left.CompareTo(right) > 0;
-    
+
     /// <summary>
     /// Determines whether one <see cref="DbTimestamp"/> is less than or equal to another.
     /// </summary>
@@ -176,7 +176,7 @@ public readonly struct DbTimestamp : IEquatable<DbTimestamp>, IComparable<DbTime
     /// <param name="right">The second timestamp to compare.</param>
     /// <returns><see langword="true"/> if <paramref name="left"/> is less than or equal to <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
     public static bool operator <=(DbTimestamp left, DbTimestamp right) => left.CompareTo(right) <= 0;
-    
+
     /// <summary>
     /// Determines whether one <see cref="DbTimestamp"/> is greater than or equal to another.
     /// </summary>
@@ -196,27 +196,29 @@ public sealed class DbTimestampType : IDbType<DbTimestamp>
     /// Gets the singleton instance of the DbTimestampType.
     /// </summary>
     public static DbTimestampType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbTimestampType"/> class.
     /// </summary>
-    private DbTimestampType() { }
-    
+    private DbTimestampType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "timestamp";
-    
+
     /// <inheritdoc />
     public int Compare(DbTimestamp left, DbTimestamp right)
     {
         return left.CompareTo(right);
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(DbTimestamp value)
     {
         return true;
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(DbTimestamp value)
     {
@@ -225,7 +227,7 @@ public sealed class DbTimestampType : IDbType<DbTimestamp>
         BinaryPrimitives.WriteInt64BigEndian(buffer.AsSpan()[8..], value.Nanoseconds);
         return buffer;
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(DbTimestamp value)
     {

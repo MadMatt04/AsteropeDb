@@ -34,27 +34,29 @@ public sealed class DbBooleanType : IDbType<bool>
     /// Gets the singleton instance of the DbBooleanType.
     /// </summary>
     public static DbBooleanType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbBooleanType"/> class.
     /// </summary>
-    private DbBooleanType() { }
-    
+    private DbBooleanType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "boolean";
-    
+
     /// <inheritdoc />
     public int Compare(bool left, bool right)
     {
         return left.CompareTo(right);
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(bool value)
     {
         return true;
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(bool value)
     {
@@ -62,7 +64,7 @@ public sealed class DbBooleanType : IDbType<bool>
         buffer[0] = value ? (byte)1 : (byte)0;
         return buffer;
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(bool value)
     {

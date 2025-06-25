@@ -27,5 +27,5 @@ namespace AsteropeDb.Network;
 /// </summary>
 public class Class1
 {
-    
+
 }

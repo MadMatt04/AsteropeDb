@@ -38,7 +38,7 @@ public interface IDbTypeRegistry
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="dbType"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the type is already registered.</exception>
     void RegisterType<T>(IDbType<T> dbType);
-    
+
     /// <summary>
     /// Gets the registered database type for the specified C# type.
     /// </summary>
@@ -46,14 +46,14 @@ public interface IDbTypeRegistry
     /// <returns>The registered database type implementation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the type is not registered.</exception>
     IDbType<T> GetType<T>();
-    
+
     /// <summary>
     /// Determines whether the specified C# type is registered.
     /// </summary>
     /// <typeparam name="T">The C# type to check.</typeparam>
     /// <returns><see langword="true"/> if the type is registered; otherwise, <see langword="false"/>.</returns>
     bool IsRegistered<T>();
-    
+
     /// <summary>
     /// Attempts to get the registered database type for the specified C# type.
     /// </summary>

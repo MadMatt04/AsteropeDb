@@ -35,7 +35,7 @@ public interface IDbSerializer
     /// Gets the unique identifier for this serializer.
     /// </summary>
     string Name { get; }
-    
+
     /// <summary>
     /// Serializes a value to a byte array.
     /// </summary>
@@ -44,7 +44,7 @@ public interface IDbSerializer
     /// <returns>A byte array containing the serialized value.</returns>
     /// <exception cref="NotSupportedException">Thrown when the serializer cannot handle the specified type.</exception>
     byte[] Serialize<T>(T value);
-    
+
     /// <summary>
     /// Deserializes a value from a byte array.
     /// </summary>
@@ -54,7 +54,7 @@ public interface IDbSerializer
     /// <exception cref="NotSupportedException">Thrown when the serializer cannot handle the specified type.</exception>
     /// <exception cref="InvalidDataException">Thrown when the data cannot be deserialized.</exception>
     T Deserialize<T>(byte[] data);
-    
+
     /// <summary>
     /// Determines whether this serializer can handle the specified type.
     /// </summary>

@@ -35,7 +35,7 @@ public interface IDbType<in T>
     /// Gets the unique type identifier for this database type.
     /// </summary>
     string TypeName { get; }
-    
+
     /// <summary>
     /// Compares two values for B+ tree indexing and sorting.
     /// </summary>
@@ -48,14 +48,14 @@ public interface IDbType<in T>
     /// Greater than zero if <paramref name="left"/> is greater than <paramref name="right"/>.
     /// </returns>
     int Compare(T left, T right);
-    
+
     /// <summary>
     /// Validates a value before storage operations.
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <returns><see langword="true"/> if the value is valid; otherwise, <see langword="false"/>.</returns>
     bool IsValid(T value);
-    
+
     /// <summary>
     /// Extracts an indexable key for B+ tree operations.
     /// This key is used for efficient range queries and ordering.
@@ -63,7 +63,7 @@ public interface IDbType<in T>
     /// <param name="value">The value to extract the index key from.</param>
     /// <returns>A byte span representing the index key.</returns>
     ReadOnlySpan<byte> GetIndexKey(T value);
-    
+
     /// <summary>
     /// Gets the hash code for efficient lookups.
     /// </summary>

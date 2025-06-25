@@ -35,27 +35,29 @@ public sealed class DbStringType : IDbType<string>
     /// Gets the singleton instance of the DbStringType.
     /// </summary>
     public static DbStringType Instance { get; } = new();
-    
+
     /// <summary>
-    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// Initializes a new instance of the <see cref="DbStringType"/> class.
     /// </summary>
-    private DbStringType() { }
-    
+    private DbStringType()
+    {
+    }
+
     /// <inheritdoc />
     public string TypeName => "string";
-    
+
     /// <inheritdoc />
     public int Compare(string left, string right)
     {
         return string.CompareOrdinal(left, right);
     }
-    
+
     /// <inheritdoc />
     public bool IsValid(string value)
     {
         return value != null;
     }
-    
+
     /// <inheritdoc />
     public ReadOnlySpan<byte> GetIndexKey(string value)
     {
@@ -63,10 +65,10 @@ public sealed class DbStringType : IDbType<string>
         {
             throw new ArgumentNullException(nameof(value), "String value cannot be null for index key generation.");
         }
-        
+
         return Encoding.UTF8.GetBytes(value);
     }
-    
+
     /// <inheritdoc />
     public int GetHashCode(string value)
     {
