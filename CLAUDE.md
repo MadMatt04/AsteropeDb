@@ -75,4 +75,5 @@ The project follows a 52-week development plan:
 - Extensively comment all public, internal and protected classes and members. Use <see cref>, <see langword> and <paramref> liberally
 - Private members do not need to be commented, unless the code is unclear or complicated
 - End all comment sentences with a period .
-- Put the MIT license header at the top of every file.
+- Put the MIT license header at the top of every file
+- Make sure to import any types you reference in comments, e.g. `using System;` for `DateTime`

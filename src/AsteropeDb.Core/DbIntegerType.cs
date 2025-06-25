@@ -20,12 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsteropeDb.Serialization;
+using System;
+using System.Buffers.Binary;
+
+namespace AsteropeDb.Core;
 
 /// <summary>
-/// Placeholder class for AsteropeDb Serialization module.
+/// Database type implementation for 64-bit signed integers.
+/// Provides numeric comparison and efficient binary indexing.
 /// </summary>
-public class Class1
+public sealed class DbIntegerType : IDbType<long>
 {
+    /// <summary>
+    /// Gets the singleton instance of the DbIntegerType.
+    /// </summary>
+    public static DbIntegerType Instance { get; } = new();
     
+    /// <summary>
+    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// </summary>
+    private DbIntegerType() { }
+    
+    /// <inheritdoc />
+    public string TypeName => "integer";
+    
+    /// <inheritdoc />
+    public int Compare(long left, long right)
+    {
+        return left.CompareTo(right);
+    }
+    
+    /// <inheritdoc />
+    public bool IsValid(long value)
+    {
+        return true;
+    }
+    
+    /// <inheritdoc />
+    public ReadOnlySpan<byte> GetIndexKey(long value)
+    {
+        byte[] buffer = new byte[8];
+        BinaryPrimitives.WriteInt64BigEndian(buffer, value);
+        return buffer;
+    }
+    
+    /// <inheritdoc />
+    public int GetHashCode(long value)
+    {
+        return value.GetHashCode();
+    }
 }

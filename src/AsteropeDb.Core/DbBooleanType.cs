@@ -20,12 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace AsteropeDb.Core;
 
 /// <summary>
-/// Placeholder class for AsteropeDb Core module.
+/// Database type implementation for boolean values.
+/// Uses standard boolean comparison where false sorts before true.
 /// </summary>
-public class Class1
+public sealed class DbBooleanType : IDbType<bool>
 {
+    /// <summary>
+    /// Gets the singleton instance of the DbBooleanType.
+    /// </summary>
+    public static DbBooleanType Instance { get; } = new();
     
+    /// <summary>
+    /// Prevents external instantiation. Use <see cref="Instance"/> instead.
+    /// </summary>
+    private DbBooleanType() { }
+    
+    /// <inheritdoc />
+    public string TypeName => "boolean";
+    
+    /// <inheritdoc />
+    public int Compare(bool left, bool right)
+    {
+        return left.CompareTo(right);
+    }
+    
+    /// <inheritdoc />
+    public bool IsValid(bool value)
+    {
+        return true;
+    }
+    
+    /// <inheritdoc />
+    public ReadOnlySpan<byte> GetIndexKey(bool value)
+    {
+        byte[] buffer = new byte[1];
+        buffer[0] = value ? (byte)1 : (byte)0;
+        return buffer;
+    }
+    
+    /// <inheritdoc />
+    public int GetHashCode(bool value)
+    {
+        return value.GetHashCode();
+    }
 }
