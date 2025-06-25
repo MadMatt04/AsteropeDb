@@ -62,3 +62,15 @@ The project follows a 52-week development plan:
 - Simple APIs that scale from embedded to networked deployment
 - .NET-native implementation with minimal external dependencies
 - Future-ready architecture for horizontal scaling
+
+## Code Style
+- Use 4 spaces for indentation
+- PascalCase for classes/methods/constants/properties, camelCase for variables and fields
+- Do not prefix private fields with _
+- Braces on new lines for classes/methods
+- File-scoped namespaces preferred
+- Avoid using var, specify type explicitly where possible
+- When using the new operator, prefer this pattern MyClass c = new();
+- Extensively comment all public, internal and protected classes and members. Use <see cref>, <see langword> and <paramref> liberally
+- Private members do not need to be commented, unless the code is unclear or complicated
+- End all comment sentences with a period .
