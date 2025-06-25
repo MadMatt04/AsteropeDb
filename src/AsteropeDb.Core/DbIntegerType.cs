@@ -60,7 +60,9 @@ public sealed class DbIntegerType : IDbType<long>
     public ReadOnlySpan<byte> GetIndexKey(long value)
     {
         byte[] buffer = new byte[8];
-        BinaryPrimitives.WriteInt64BigEndian(buffer, value);
+        // Flip the sign bit to make signed integers sort correctly as unsigned bytes
+        long transformed = value ^ long.MinValue;
+        BinaryPrimitives.WriteInt64BigEndian(buffer, transformed);
         return buffer;
     }
     
