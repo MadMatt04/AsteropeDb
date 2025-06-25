@@ -69,8 +69,10 @@ The project follows a 52-week development plan:
 - Do not prefix private fields with _
 - Braces on new lines for classes/methods
 - File-scoped namespaces preferred
+- Disallow implicit usings
 - Avoid using var, specify type explicitly where possible
 - When using the new operator, prefer this pattern MyClass c = new();
 - Extensively comment all public, internal and protected classes and members. Use <see cref>, <see langword> and <paramref> liberally
 - Private members do not need to be commented, unless the code is unclear or complicated
 - End all comment sentences with a period .
+- Put the MIT license header at the top of every file.
