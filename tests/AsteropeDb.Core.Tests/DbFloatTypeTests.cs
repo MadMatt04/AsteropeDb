@@ -38,7 +38,7 @@ public class DbFloatTypeTests
     {
         DbFloatType instance1 = DbFloatType.Instance;
         DbFloatType instance2 = DbFloatType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -88,7 +88,7 @@ public class DbFloatTypeTests
     public void GetIndexKey_WithValidValues_ShouldReturnEightBytes(double value)
     {
         ReadOnlySpan<byte> key = type.GetIndexKey(value);
-        
+
         Assert.Equal(8, key.Length);
     }
 
@@ -106,7 +106,7 @@ public class DbFloatTypeTests
     {
         int typeHashCode = type.GetHashCode(value);
         int systemHashCode = value.GetHashCode();
-        
+
         Assert.Equal(systemHashCode, typeHashCode);
     }
 
@@ -118,7 +118,7 @@ public class DbFloatTypeTests
         ReadOnlySpan<byte> negativeInfinityKey = type.GetIndexKey(double.NegativeInfinity);
         ReadOnlySpan<byte> zeroKey = type.GetIndexKey(0.0);
         ReadOnlySpan<byte> negativeZeroKey = type.GetIndexKey(-0.0);
-        
+
         Assert.Equal(8, positiveInfinityKey.Length);
         Assert.Equal(8, negativeInfinityKey.Length);
         Assert.Equal(8, zeroKey.Length);
@@ -130,13 +130,13 @@ public class DbFloatTypeTests
     {
         double[] values = { 0.0, 1.0, 2.5, 100.0, double.PositiveInfinity };
         byte[][] keys = new byte[values.Length][];
-        
+
         for (int i = 0; i < values.Length; i++)
         {
             ReadOnlySpan<byte> key = type.GetIndexKey(values[i]);
             keys[i] = key.ToArray();
         }
-        
+
         // For positive values, lexicographic byte comparison should match numeric ordering
         for (int i = 0; i < keys.Length - 1; i++)
         {
@@ -150,7 +150,10 @@ public class DbFloatTypeTests
         for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
         {
             int comparison = left[i].CompareTo(right[i]);
-            if (comparison != 0) return comparison;
+            if (comparison != 0)
+            {
+                return comparison;
+            }
         }
         return left.Length.CompareTo(right.Length);
     }

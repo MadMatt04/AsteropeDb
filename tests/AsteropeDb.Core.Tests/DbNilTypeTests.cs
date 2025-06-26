@@ -38,7 +38,7 @@ public class DbNilTypeTests
     {
         DbNil value1 = DbNil.Value;
         DbNil value2 = DbNil.Value;
-        
+
         Assert.Equal(value1, value2);
     }
 
@@ -47,7 +47,7 @@ public class DbNilTypeTests
     {
         DbNil nil1 = DbNil.Value;
         DbNil nil2 = new();
-        
+
         Assert.True(nil1.Equals(nil2));
         Assert.True(nil1 == nil2);
         Assert.False(nil1 != nil2);
@@ -72,7 +72,7 @@ public class DbNilTypeTests
     {
         DbNilType instance1 = DbNilType.Instance;
         DbNilType instance2 = DbNilType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -94,7 +94,7 @@ public class DbNilTypeTests
     {
         DbNil nil1 = DbNil.Value;
         DbNil nil2 = new();
-        
+
         int result = type.Compare(nil1, nil2);
         Assert.Equal(0, result);
     }
@@ -104,7 +104,7 @@ public class DbNilTypeTests
     {
         DbNil nil = DbNil.Value;
         ReadOnlySpan<byte> key = type.GetIndexKey(nil);
-        
+
         Assert.True(key.IsEmpty);
         Assert.Equal(0, key.Length);
     }
@@ -114,7 +114,7 @@ public class DbNilTypeTests
     {
         DbNil nil = DbNil.Value;
         int hashCode = type.GetHashCode(nil);
-        
+
         Assert.Equal(0, hashCode);
     }
 
@@ -122,7 +122,7 @@ public class DbNilTypeTests
     public void DbNil_EqualsObject_WithNonDbNil_ShouldReturnFalse()
     {
         DbNil nil = DbNil.Value;
-        
+
         Assert.False(nil.Equals("not a DbNil"));
         Assert.False(nil.Equals(null));
         Assert.False(nil.Equals(42));
@@ -133,7 +133,7 @@ public class DbNilTypeTests
     {
         DbNil nil1 = DbNil.Value;
         DbNil nil2 = new();
-        
+
         Assert.True(nil1.Equals((object)nil2));
     }
 }

@@ -284,3 +284,6 @@ local.settings.json
 *.bak
 temp/
 tmp/
+
+## Claude
+.claude/

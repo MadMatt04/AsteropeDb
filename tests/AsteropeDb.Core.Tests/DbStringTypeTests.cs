@@ -39,7 +39,7 @@ public class DbStringTypeTests
     {
         DbStringType instance1 = DbStringType.Instance;
         DbStringType instance2 = DbStringType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -62,7 +62,7 @@ public class DbStringTypeTests
     [Fact]
     public void IsValid_WithNull_ShouldReturnFalse()
     {
-        Assert.False(type.IsValid(null));
+        Assert.False(type.IsValid(null!));
     }
 
     [Theory]
@@ -86,7 +86,7 @@ public class DbStringTypeTests
     {
         ReadOnlySpan<byte> key = type.GetIndexKey(value);
         byte[] expected = Encoding.UTF8.GetBytes(value);
-        
+
         Assert.Equal(expected.Length, key.Length);
         Assert.True(key.SequenceEqual(expected));
     }
@@ -94,7 +94,7 @@ public class DbStringTypeTests
     [Fact]
     public void GetIndexKey_WithNull_ShouldThrowArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(() => type.GetIndexKey(null));
+        Assert.Throws<ArgumentNullException>(() => type.GetIndexKey(null!));
     }
 
     [Theory]
@@ -105,29 +105,29 @@ public class DbStringTypeTests
     {
         int typeHashCode = type.GetHashCode(value);
         int systemHashCode = value.GetHashCode();
-        
+
         Assert.Equal(systemHashCode, typeHashCode);
     }
 
     [Fact]
     public void GetHashCode_WithNull_ShouldReturnZero()
     {
-        int hashCode = type.GetHashCode(null);
+        int hashCode = type.GetHashCode(null!);
         Assert.Equal(0, hashCode);
     }
 
     [Fact]
     public void GetIndexKey_ShouldProduceOrderedKeys()
     {
-        string[] values = { "", "a", "apple", "banana", "z" };
+        string[] values = { string.Empty, "a", "apple", "banana", "z" };
         byte[][] keys = new byte[values.Length][];
-        
+
         for (int i = 0; i < values.Length; i++)
         {
             ReadOnlySpan<byte> key = type.GetIndexKey(values[i]);
             keys[i] = key.ToArray();
         }
-        
+
         // UTF-8 byte ordering should match lexicographic string ordering for ASCII
         for (int i = 0; i < keys.Length - 1; i++)
         {
@@ -140,12 +140,12 @@ public class DbStringTypeTests
     public void GetIndexKey_WithUnicodeStrings_ShouldHandleCorrectly()
     {
         string[] values = { "café", "cafés", "naïve" };
-        
+
         foreach (string value in values)
         {
             ReadOnlySpan<byte> key = type.GetIndexKey(value);
             byte[] expected = Encoding.UTF8.GetBytes(value);
-            
+
             Assert.True(key.SequenceEqual(expected));
         }
     }
@@ -155,7 +155,10 @@ public class DbStringTypeTests
         for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
         {
             int comparison = left[i].CompareTo(right[i]);
-            if (comparison != 0) return comparison;
+            if (comparison != 0)
+            {
+                return comparison;
+            }
         }
         return left.Length.CompareTo(right.Length);
     }

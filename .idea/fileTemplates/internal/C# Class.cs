@@ -27,7 +27,7 @@ namespace $NAMESPACE;
 /// <summary>
 /// $END$
 /// </summary>
-public class $CLASS$ 
+public class $CLASS$
 {
-    
+
 }

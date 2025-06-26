@@ -38,7 +38,7 @@ public class DbBooleanTypeTests
     {
         DbBooleanType instance1 = DbBooleanType.Instance;
         DbBooleanType instance2 = DbBooleanType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -71,7 +71,7 @@ public class DbBooleanTypeTests
     public void GetIndexKey_WithFalse_ShouldReturnZeroByte()
     {
         ReadOnlySpan<byte> key = type.GetIndexKey(false);
-        
+
         Assert.Equal(1, key.Length);
         Assert.Equal(0, key[0]);
     }
@@ -80,7 +80,7 @@ public class DbBooleanTypeTests
     public void GetIndexKey_WithTrue_ShouldReturnOneByte()
     {
         ReadOnlySpan<byte> key = type.GetIndexKey(true);
-        
+
         Assert.Equal(1, key.Length);
         Assert.Equal(1, key[0]);
     }
@@ -92,7 +92,7 @@ public class DbBooleanTypeTests
     {
         int typeHashCode = type.GetHashCode(value);
         int systemHashCode = value.GetHashCode();
-        
+
         Assert.Equal(systemHashCode, typeHashCode);
     }
 
@@ -101,7 +101,7 @@ public class DbBooleanTypeTests
     {
         ReadOnlySpan<byte> falseKey = type.GetIndexKey(false);
         ReadOnlySpan<byte> trueKey = type.GetIndexKey(true);
-        
+
         // false should sort before true
         Assert.True(falseKey[0] < trueKey[0]);
     }

@@ -38,7 +38,7 @@ public class DbTimestampTypeTests
     public void DbTimestamp_Constructor_WithValidValues_ShouldSucceed()
     {
         DbTimestamp timestamp = new(123456789L, 50L);
-        
+
         Assert.Equal(123456789L, timestamp.Ticks);
         Assert.Equal(50L, timestamp.Nanoseconds);
     }
@@ -47,7 +47,7 @@ public class DbTimestampTypeTests
     public void DbTimestamp_Constructor_WithDefaultNanoseconds_ShouldSucceed()
     {
         DbTimestamp timestamp = new(123456789L);
-        
+
         Assert.Equal(123456789L, timestamp.Ticks);
         Assert.Equal(0L, timestamp.Nanoseconds);
     }
@@ -65,7 +65,7 @@ public class DbTimestampTypeTests
     {
         DateTime dateTime = new(2023, 1, 1, 12, 0, 0, DateTimeKind.Utc);
         DbTimestamp timestamp = DbTimestamp.FromDateTime(dateTime);
-        
+
         long expectedTicks = dateTime.Ticks - DateTime.UnixEpoch.Ticks;
         Assert.Equal(expectedTicks, timestamp.Ticks);
         Assert.Equal(0L, timestamp.Nanoseconds);
@@ -76,7 +76,7 @@ public class DbTimestampTypeTests
     {
         DateTime localTime = new(2023, 1, 1, 12, 0, 0, DateTimeKind.Local);
         DbTimestamp timestamp = DbTimestamp.FromDateTime(localTime);
-        
+
         DateTime utcTime = localTime.ToUniversalTime();
         long expectedTicks = utcTime.Ticks - DateTime.UnixEpoch.Ticks;
         Assert.Equal(expectedTicks, timestamp.Ticks);
@@ -87,7 +87,7 @@ public class DbTimestampTypeTests
     {
         DateTimeOffset dateTimeOffset = new(2023, 1, 1, 12, 0, 0, TimeSpan.FromHours(2));
         DbTimestamp timestamp = DbTimestamp.FromDateTimeOffset(dateTimeOffset);
-        
+
         long expectedTicks = dateTimeOffset.UtcTicks - DateTime.UnixEpoch.Ticks;
         Assert.Equal(expectedTicks, timestamp.Ticks);
     }
@@ -98,7 +98,7 @@ public class DbTimestampTypeTests
         long ticks = 123456789L;
         DbTimestamp timestamp = new(ticks);
         DateTime dateTime = timestamp.ToDateTime();
-        
+
         DateTime expected = new(DateTime.UnixEpoch.Ticks + ticks, DateTimeKind.Utc);
         Assert.Equal(expected, dateTime);
         Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
@@ -110,7 +110,7 @@ public class DbTimestampTypeTests
         long ticks = 123456789L;
         DbTimestamp timestamp = new(ticks);
         DateTimeOffset dateTimeOffset = timestamp.ToDateTimeOffset();
-        
+
         DateTimeOffset expected = new(DateTime.UnixEpoch.Ticks + ticks, TimeSpan.Zero);
         Assert.Equal(expected, dateTimeOffset);
     }
@@ -125,7 +125,7 @@ public class DbTimestampTypeTests
     {
         DbTimestamp timestamp1 = new(ticks1, nanos1);
         DbTimestamp timestamp2 = new(ticks2, nanos2);
-        
+
         int result = timestamp1.CompareTo(timestamp2);
         Assert.Equal(Math.Sign(expected), Math.Sign(result));
     }
@@ -136,7 +136,7 @@ public class DbTimestampTypeTests
         DbTimestamp timestamp1 = new(123L, 45L);
         DbTimestamp timestamp2 = new(123L, 45L);
         DbTimestamp timestamp3 = new(456L, 78L);
-        
+
         Assert.True(timestamp1.Equals(timestamp2));
         Assert.True(timestamp1 == timestamp2);
         Assert.False(timestamp1.Equals(timestamp3));
@@ -149,7 +149,7 @@ public class DbTimestampTypeTests
     {
         DbTimestamp timestamp1 = new(123L, 45L);
         DbTimestamp timestamp2 = new(123L, 45L);
-        
+
         Assert.Equal(timestamp1.GetHashCode(), timestamp2.GetHashCode());
     }
 
@@ -158,7 +158,7 @@ public class DbTimestampTypeTests
     {
         DateTime baseTime = new(2023, 1, 1, 12, 0, 0, DateTimeKind.Utc);
         DbTimestamp timestamp = DbTimestamp.FromDateTime(baseTime);
-        
+
         string result = timestamp.ToString();
         Assert.Contains("2023-01-01T12:00:00", result);
         Assert.EndsWith("Z", result);
@@ -170,7 +170,7 @@ public class DbTimestampTypeTests
         DateTime baseTime = new(2023, 1, 1, 12, 0, 0, DateTimeKind.Utc);
         long baseTicks = baseTime.Ticks - DateTime.UnixEpoch.Ticks;
         DbTimestamp timestamp = new(baseTicks, 50L);
-        
+
         string result = timestamp.ToString();
         Assert.Contains("50Z", result);
     }
@@ -180,7 +180,7 @@ public class DbTimestampTypeTests
     {
         DbTimestampType instance1 = DbTimestampType.Instance;
         DbTimestampType instance2 = DbTimestampType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -202,10 +202,10 @@ public class DbTimestampTypeTests
     {
         DbTimestamp timestamp1 = new(100L, 30L);
         DbTimestamp timestamp2 = new(200L, 50L);
-        
+
         int typeResult = type.Compare(timestamp1, timestamp2);
         int timestampResult = timestamp1.CompareTo(timestamp2);
-        
+
         Assert.Equal(timestampResult, typeResult);
     }
 
@@ -214,7 +214,7 @@ public class DbTimestampTypeTests
     {
         DbTimestamp timestamp = new(123L, 45L);
         ReadOnlySpan<byte> key = type.GetIndexKey(timestamp);
-        
+
         Assert.Equal(16, key.Length);
     }
 
@@ -223,10 +223,10 @@ public class DbTimestampTypeTests
     {
         DbTimestamp timestamp = new(123456789L, 50L);
         ReadOnlySpan<byte> key = type.GetIndexKey(timestamp);
-        
+
         long reconstructedTicks = BinaryPrimitives.ReadInt64BigEndian(key[..8]);
         long reconstructedNanos = BinaryPrimitives.ReadInt64BigEndian(key[8..]);
-        
+
         Assert.Equal(timestamp.Ticks, reconstructedTicks);
         Assert.Equal(timestamp.Nanoseconds, reconstructedNanos);
     }
@@ -235,31 +235,32 @@ public class DbTimestampTypeTests
     public void GetHashCode_ShouldMatchDbTimestampHashCode()
     {
         DbTimestamp timestamp = new(123L, 45L);
-        
+
         int typeHashCode = type.GetHashCode(timestamp);
         int timestampHashCode = timestamp.GetHashCode();
-        
+
         Assert.Equal(timestampHashCode, typeHashCode);
     }
 
     [Fact]
     public void GetIndexKey_ShouldProduceOrderedKeys()
     {
-        DbTimestamp[] timestamps = {
+        DbTimestamp[] timestamps =
+        {
             new(100L, 0L),
             new(100L, 50L),
             new(200L, 0L),
-            new(200L, 50L)
+            new(200L, 50L),
         };
-        
+
         byte[][] keys = new byte[timestamps.Length][];
-        
+
         for (int i = 0; i < timestamps.Length; i++)
         {
             ReadOnlySpan<byte> key = type.GetIndexKey(timestamps[i]);
             keys[i] = key.ToArray();
         }
-        
+
         for (int i = 0; i < keys.Length - 1; i++)
         {
             int comparison = CompareByteArrays(keys[i], keys[i + 1]);
@@ -272,7 +273,10 @@ public class DbTimestampTypeTests
         for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
         {
             int comparison = left[i].CompareTo(right[i]);
-            if (comparison != 0) return comparison;
+            if (comparison != 0)
+            {
+                return comparison;
+            }
         }
         return left.Length.CompareTo(right.Length);
     }

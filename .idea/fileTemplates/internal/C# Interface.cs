@@ -27,7 +27,7 @@ namespace $NAMESPACE;
 /// <summary>
 /// $END$
 /// </summary>
-public interface $INTERFACE$ 
+public interface $INTERFACE$
 {
-    
+
 }

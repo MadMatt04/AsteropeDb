@@ -39,7 +39,7 @@ public class DbIntegerTypeTests
     {
         DbIntegerType instance1 = DbIntegerType.Instance;
         DbIntegerType instance2 = DbIntegerType.Instance;
-        
+
         Assert.Same(instance1, instance2);
     }
 
@@ -81,7 +81,7 @@ public class DbIntegerTypeTests
     public void GetIndexKey_ShouldReturnEightBytes(long value)
     {
         ReadOnlySpan<byte> key = type.GetIndexKey(value);
-        
+
         Assert.Equal(8, key.Length);
     }
 
@@ -96,7 +96,7 @@ public class DbIntegerTypeTests
         ReadOnlySpan<byte> key = type.GetIndexKey(value);
         long transformed = BinaryPrimitives.ReadInt64BigEndian(key);
         long reconstructed = transformed ^ long.MinValue;
-        
+
         Assert.Equal(value, reconstructed);
     }
 
@@ -108,7 +108,7 @@ public class DbIntegerTypeTests
     {
         int typeHashCode = type.GetHashCode(value);
         int systemHashCode = value.GetHashCode();
-        
+
         Assert.Equal(systemHashCode, typeHashCode);
     }
 
@@ -117,13 +117,13 @@ public class DbIntegerTypeTests
     {
         long[] values = { -100L, -1L, 0L, 1L, 100L };
         byte[][] keys = new byte[values.Length][];
-        
+
         for (int i = 0; i < values.Length; i++)
         {
             ReadOnlySpan<byte> key = type.GetIndexKey(values[i]);
             keys[i] = key.ToArray();
         }
-        
+
         // Verify that keys are in ascending order using big-endian comparison
         for (int i = 0; i < keys.Length - 1; i++)
         {
@@ -137,7 +137,10 @@ public class DbIntegerTypeTests
         for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
         {
             int comparison = left[i].CompareTo(right[i]);
-            if (comparison != 0) return comparison;
+            if (comparison != 0)
+            {
+                return comparison;
+            }
         }
         return left.Length.CompareTo(right.Length);
     }
