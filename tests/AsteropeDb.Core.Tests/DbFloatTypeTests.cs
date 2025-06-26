@@ -155,6 +155,7 @@ public class DbFloatTypeTests
                 return comparison;
             }
         }
+
         return left.Length.CompareTo(right.Length);
     }
 }

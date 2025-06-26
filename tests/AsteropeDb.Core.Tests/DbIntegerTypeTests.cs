@@ -142,6 +142,7 @@ public class DbIntegerTypeTests
                 return comparison;
             }
         }
+
         return left.Length.CompareTo(right.Length);
     }
 }

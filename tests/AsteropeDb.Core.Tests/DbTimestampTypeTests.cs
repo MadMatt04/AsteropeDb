@@ -278,6 +278,7 @@ public class DbTimestampTypeTests
                 return comparison;
             }
         }
+
         return left.Length.CompareTo(right.Length);
     }
 }
