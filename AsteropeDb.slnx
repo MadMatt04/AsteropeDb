@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/AsteropeDb.Core/AsteropeDb.Core.csproj" />
+    <Project Path="src/AsteropeDb.Network/AsteropeDb.Network.csproj" />
+    <Project Path="src/AsteropeDb.Serialization/AsteropeDb.Serialization.csproj" />
+    <Project Path="src/AsteropeDb.Storage/AsteropeDb.Storage.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AsteropeDb.Core.Tests/AsteropeDb.Core.Tests.csproj" />
+    <Project Path="tests/AsteropeDb.Network.Tests/AsteropeDb.Network.Tests.csproj" />
+    <Project Path="tests/AsteropeDb.Serialization.Tests/AsteropeDb.Serialization.Tests.csproj" />
+    <Project Path="tests/AsteropeDb.Storage.Tests/AsteropeDb.Storage.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,158 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default model, used by OpenCode's built-in agents (compaction, summary,
+  // title) and as a fallback. The three custom agents below each set their
+  // own. Everything is a Command Code slug prefixed with the provider id
+  // `commandcode`. Run /models in the TUI if an id ever fails to resolve.
+  "model": "commandcode/deepseek/deepseek-v4-pro",
+
+  // Which primary agent the TUI opens on. A CONTINUED session keeps the agent
+  // it was created with, so this applies to NEW sessions only.
+  "default_agent": "orchestrator",
+
+  // Titles, summaries, commit-message drafts. Pennies.
+  "small_model": "commandcode/deepseek/deepseek-v4.1-flash",
+
+  // ---------------------------------------------------------------------------
+  // One shared policy for all three agents. Bash is open; the only two
+  // commands that need attention before they run are the ones that touch a
+  // remote. Everything else that needs care (nuget, schema decisions, the
+  // right test command) is an AGENTS.md convention the prompts enforce.
+  // ---------------------------------------------------------------------------
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "git commit*": "ask",
+      "git push*": "ask"
+    },
+    "webfetch": "allow",
+    "websearch": "allow"
+  },
+
+  "agent": {
+    // =========================================================================
+    // ORCHESTRATOR. Understands the request, decides how much process it
+    // needs (AGENTS.md Track F/S/L), designs and plans it, then delegates
+    // execution to @coder one step at a time and brings in @reviewer when a
+    // step is done. Does not write production code itself - that boundary is
+    // enforced by the `edit` permission below; bash is open, so it is also a
+    // matter of the model following its own prompt, not a hard sandbox.
+    // DeepSeek V4 Pro: the highest-leverage seat, this is where API-exactness
+    // gets pinned down so the cheap implementor never has to guess.
+    // =========================================================================
+    "orchestrator": {
+      "description": "Understands the request, writes the design spec and implementation plan, delegates steps to @coder, brings in @reviewer. Does not write production code. Default agent.",
+      "mode": "primary",
+      "model": "commandcode/deepseek/deepseek-v4-pro",
+      "temperature": 0.3,
+      "steps": 150,
+      "prompt": "{file:./.opencode/prompts/orchestrator.md}",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "docs/superpowers/specs/**": "allow",
+          "docs/superpowers/plans/**": "allow",
+          "AGENTS.md": "allow",
+          "README.md": "allow"
+        }
+      },
+      "color": "#c084fc"
+    },
+
+    // =========================================================================
+    // CODER. GLM-5.3-Flash: cheap, 1M ctx, best open tool-calling. Runs the
+    // red-green-refactor loop against the compiler, one step at a time, on
+    // instructions from @orchestrator or a direct /tdd, /fix, /small, /gate.
+    // Subagent - invoked by mention or by those commands, never Tab-switched
+    // to as the driver.
+    // =========================================================================
+    "coder": {
+      "description": "Implements one step at a time, strictly TDD, against exact signatures handed to it. Invoked by @coder or via /tdd, /fix, /small, /gate.",
+      "mode": "subagent",
+      "model": "commandcode/z-ai/glm-5.3-flash",
+      "temperature": 0.1,
+      "steps": 200,
+      "prompt": "{file:./.opencode/prompts/coder.md}",
+      "color": "#4ade80"
+    },
+
+    // =========================================================================
+    // REVIEWER. DeepSeek V4.1 Flash: different lab, different blind spots than
+    // both Orchestrator and Coder. Cannot edit code - kept on its own narrow
+    // bash allowlist for the same reason the edit permission is narrow: a
+    // reviewer that can casually alter what it's reviewing, even via a shell
+    // redirect, stops being a check on anything. This is the one deliberate
+    // exception to the shared-bash-policy simplification above.
+    // =========================================================================
+    "reviewer": {
+      "description": "Adversarial review of a diff against the plan or stated intent. Reports findings with file:line; never edits code.",
+      "mode": "subagent",
+      "model": "commandcode/deepseek/deepseek-v4.1-flash",
+      "temperature": 0.1,
+      "prompt": "{file:./.opencode/prompts/reviewer.md}",
+      "permission": {
+        "edit": { "*": "deny", "docs/reviews/**": "allow" },
+        "bash": {
+          "*": "deny",
+          "dotnet build AsteropeDb.slnx*": "allow",
+          "dotnet test*": "allow",
+          "dotnet list*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "git status*": "allow"
+        }
+      },
+      "color": "#f87171"
+    }
+  },
+
+  "command": {
+    "brainstorm": {
+      "description": "Explore the problem before committing to a design (Orchestrator)",
+      "agent": "orchestrator",
+      "template": "{file:./.opencode/prompts/cmd-brainstorm.md}"
+    },
+    "design": {
+      "description": "Write the design spec (Orchestrator)",
+      "agent": "orchestrator",
+      "template": "{file:./.opencode/prompts/cmd-design.md}"
+    },
+    "plan": {
+      "description": "Write the test-first implementation plan (Orchestrator)",
+      "agent": "orchestrator",
+      "template": "{file:./.opencode/prompts/cmd-plan.md}"
+    },
+    "tdd": {
+      "description": "Track L: execute the next unchecked plan step, TDD (Coder)",
+      "agent": "coder",
+      "subtask": true,
+      "template": "{file:./.opencode/prompts/cmd-tdd.md}"
+    },
+    "fix": {
+      "description": "Track F: known-cause defect - regression test, fix, gate (Coder)",
+      "agent": "coder",
+      "subtask": true,
+      "template": "{file:./.opencode/prompts/cmd-fix.md}"
+    },
+    "small": {
+      "description": "Track S: small feature - inline plan, then TDD (Coder)",
+      "agent": "coder",
+      "subtask": true,
+      "template": "{file:./.opencode/prompts/cmd-small.md}"
+    },
+    "gate": {
+      "description": "Run the full .NET quality gate and report failures only (Coder)",
+      "agent": "coder",
+      "subtask": true,
+      "template": "{file:./.opencode/prompts/cmd-gate.md}"
+    },
+    "review": {
+      "description": "Adversarial review of the current diff (Reviewer)",
+      "agent": "reviewer",
+      "subtask": true,
+      "template": "{file:./.opencode/prompts/cmd-review.md}"
+    }
+  }
+}
