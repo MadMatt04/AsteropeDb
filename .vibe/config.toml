@@ -1,0 +1,114 @@
+# Extra models for Mistral Vibe CLI (tested against v2.26.1 source, 2026-10-11)
+# Append to ~/.vibe/config.toml (create the file if it doesn't exist).
+# Mistral Medium 3.5 is built in (alias "mistral-medium-3.5"), so it isn't repeated here.
+#
+# Thinking levels: with backend = "mistral", Vibe sends off/low -> "none" and
+# medium/high/max -> "high". The levels below are restricted to what each model accepts.
+# Prices are USD per million tokens and are only used for Vibe's cost display and caps.
+
+# These models need a Studio PuasAPI key. The Vibe key that browser sign-in creates
+# only works with Vibe's own model (Medium 3.5); other models return 401
+# "Invalid API key". So they get their own provider with a separate key, and
+# Medium 3.5 keeps using the Vibe key.
+# Put the key in ~/.vibe/.env:  MISTRAL_STUDIO_API_KEY=your-studio-key
+
+# Agent setup: .vibe/agents/{orchestrator,coder,reviewer}.toml define the three
+# roles - orchestrator is the default agent, coder and reviewer are subagents
+# the orchestrator spawns via the task tool.
+default_agent = "orchestrator"
+
+[[providers]]
+name = "mistral-studio"
+api_base = "https://api.mistral.ai/v1"
+api_key_env_var = "MISTRAL_STUDIO_API_KEY"
+backend = "mistral"
+
+# Mistral Large 4: public preview, released 2026-10-06.
+# Docs say 1M context, but the live API currently caps prompts at 524,288 tokens.
+# Prices are the 50%-off launch rate (list price is 1.36 / 4.18 / 0.14).
+[[models]]
+name = "mistral-large-4"
+provider = "mistral-studio"
+alias = "mistral-large-4"
+display_name = "Mistral Large 4 (preview)"
+temperature = 1.0
+input_price = 0.68
+output_price = 2.09
+cached_input_price = 0.07
+thinking = "high"
+thinking_levels = ["off", "high"]
+supports_images = true
+max_context_length = 524288
+
+# Mistral Large 4 without thinking, for the coder agent (.vibe/agents/coder.toml):
+# same model and price, reasoning disabled. A separate entry because thinking is
+# a per-model config field - /thinking rewrites the active model's entry, so the
+# orchestrator's "high" and the coder's "off" need two aliases of one model.
+[[models]]
+name = "mistral-large-4"
+provider = "mistral-studio"
+alias = "mistral-large-4-coder"
+display_name = "Mistral Large 4 (no thinking)"
+temperature = 1.0
+input_price = 0.68
+output_price = 2.09
+cached_input_price = 0.07
+thinking = "off"
+thinking_levels = ["off", "high"]
+supports_images = true
+max_context_length = 524288
+
+# Z.ai GLM 5.3: third-party model hosted by Mistral, GA since 2026-09-15. Text only.
+# Only "high" is offered: GLM 5.3 rejects reasoning_effort "none", which Vibe sends
+# for off/low (bug #1115).
+# The alias matches Mistral's remote rollout, so if your account gets the rollout
+# you see one entry instead of a duplicate (your settings win).
+[[models]]
+name = "zai-glm-5-3"
+provider = "mistral-studio"
+alias = "glm-5-3"
+display_name = "Z.ai GLM 5.3 (Mistral hosted)"
+temperature = 1.0
+input_price = 1.4
+output_price = 4.4
+cached_input_price = 0.14
+thinking = "high"
+thinking_levels = ["high"]
+supports_images = false
+max_context_length = 1048576
+# Compaction triggers at 80% of context (~840k tokens) by default. Lower it to save money:
+# auto_compact_threshold = 400000
+
+# Mistral Small 4: fast and cheap hybrid reasoning model.
+[[models]]
+name = "mistral-small-latest"
+provider = "mistral-studio"
+alias = "mistral-small-4"
+display_name = "Mistral Small 4"
+temperature = 1.0
+input_price = 0.15
+output_price = 0.6
+cached_input_price = 0.015
+thinking = "high"
+thinking_levels = ["off", "high"]
+supports_images = true
+max_context_length = 262144
+
+# Mistral Large 3: non-reasoning model. Pinned to 2512 so it keeps pointing at
+# Large 3 when mistral-large-latest moves to Large 4.
+# Leave thinking "off". Vibe then sends no reasoning parameter at all.
+[[models]]
+name = "mistral-large-2512"
+provider = "mistral-studio"
+alias = "mistral-large-3"
+display_name = "Mistral Large 3"
+input_price = 0.5
+output_price = 1.5
+cached_input_price = 0.05
+thinking = "off"
+supports_images = true
+max_context_length = 262144
+
+# To start Vibe on one of these by default instead of Medium 3.5, add this line
+# at the TOP of config.toml (it must come before any [[...]] section):
+# active_model = "glm-5-3"

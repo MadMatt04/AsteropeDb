@@ -1,0 +1,2 @@
+# API keys and credentials - never commit these.
+.env
